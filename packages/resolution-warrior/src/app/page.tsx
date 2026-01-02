@@ -331,10 +331,17 @@ export default function ResolutionWarrior() {
       }
     }
 
+    let victoryTimer = 0;
+    
     function updateVictory() {
-      player.hp = Math.min(player.maxHp, player.hp + 20);
+      if (victoryTimer === 0) {
+        player.hp = Math.min(player.maxHp, player.hp + 20);
+      }
       
-      setTimeout(() => {
+      victoryTimer++;
+      
+      if (victoryTimer > 120) { // 2 seconds at 60fps
+        victoryTimer = 0;
         currentLevel++;
         if (currentLevel >= ENEMIES.length) {
           gameState = STATE.WIN;
@@ -342,7 +349,7 @@ export default function ResolutionWarrior() {
           gameState = STATE.RUNNING;
           backgroundHue = 240 - (currentLevel * 15);
         }
-      }, 2000);
+      }
     }
 
     function updateFloatingTexts() {
@@ -818,6 +825,7 @@ export default function ResolutionWarrior() {
     </div>
   );
 }
+
 
 
 
