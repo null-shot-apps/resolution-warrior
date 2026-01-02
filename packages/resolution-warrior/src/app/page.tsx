@@ -390,27 +390,86 @@ export default function ResolutionWarrior() {
         ctx.globalAlpha = 0.5;
       }
       
+      const centerX = player.x;
+      const baseY = player.y + player.height;
+      
+      // Head
       ctx.fillStyle = '#00ffff';
-      ctx.fillRect(player.x - player.width / 2, player.y, player.width, player.height);
+      ctx.fillRect(centerX - 12, player.y - 25, 24, 24);
       
-      ctx.fillStyle = '#00cccc';
-      ctx.fillRect(player.x - 15, player.y - 20, 30, 20);
-      
+      // Eyes
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(player.x - 10, player.y - 15, 6, 6);
-      ctx.fillRect(player.x + 4, player.y - 15, 6, 6);
+      ctx.fillRect(centerX - 8, player.y - 18, 5, 5);
+      ctx.fillRect(centerX + 3, player.y - 18, 5, 5);
       
+      // Pupils
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(centerX - 6, player.y - 16, 2, 2);
+      ctx.fillRect(centerX + 5, player.y - 16, 2, 2);
+      
+      // Body (torso)
+      ctx.fillStyle = '#00cccc';
+      ctx.fillRect(centerX - 15, player.y, 30, 40);
+      
+      // Arms
       if (player.isBlocking) {
-        ctx.fillStyle = '#ffff00';
-        ctx.fillRect(player.x - 25, player.y + 10, 10, 30);
-        ctx.fillRect(player.x + 15, player.y + 10, 10, 30);
+        // Blocking pose - arms up
+        ctx.fillStyle = '#00ffff';
+        // Left arm
+        ctx.fillRect(centerX - 25, player.y + 5, 10, 25);
+        // Right arm
+        ctx.fillRect(centerX + 15, player.y + 5, 10, 25);
+        // Shield effect
+        ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
+        ctx.fillRect(centerX - 30, player.y, 60, 50);
+      } else if (player.isAttacking && player.attackType === 'punch') {
+        // Punching pose
+        ctx.fillStyle = '#00ffff';
+        const punchArm = player.facingRight ? 1 : -1;
+        // Non-punching arm
+        ctx.fillRect(centerX - punchArm * 25, player.y + 5, 10, 30);
+        // Punching arm extended
+        ctx.fillRect(centerX + punchArm * 15, player.y + 10, 30, 8);
+        // Fist
+        ctx.fillStyle = '#ff00ff';
+        ctx.fillRect(centerX + punchArm * 45, player.y + 8, 12, 12);
+      } else if (player.isAttacking && player.attackType === 'kick') {
+        // Kicking pose
+        ctx.fillStyle = '#00ffff';
+        // Both arms
+        ctx.fillRect(centerX - 25, player.y + 5, 10, 30);
+        ctx.fillRect(centerX + 15, player.y + 5, 10, 30);
+      } else {
+        // Normal stance
+        ctx.fillStyle = '#00ffff';
+        // Left arm
+        ctx.fillRect(centerX - 25, player.y + 5, 10, 30);
+        // Right arm
+        ctx.fillRect(centerX + 15, player.y + 5, 10, 30);
       }
       
-      if (player.isAttacking) {
+      // Legs
+      ctx.fillStyle = '#0099cc';
+      if (player.isAttacking && player.attackType === 'kick') {
+        // Kicking pose
+        const kickDir = player.facingRight ? 1 : -1;
+        // Standing leg
+        ctx.fillRect(centerX - kickDir * 10, player.y + 40, 12, 30);
+        // Kicking leg extended
+        ctx.fillRect(centerX + kickDir * 5, player.y + 35, 35, 10);
+        // Foot
         ctx.fillStyle = '#ff00ff';
-        const attackX = player.facingRight ? player.x + 30 : player.x - 50;
-        const attackW = player.attackType === 'kick' ? 40 : 30;
-        ctx.fillRect(attackX, player.y + 20, attackW, 15);
+        ctx.fillRect(centerX + kickDir * 40, player.y + 33, 15, 14);
+      } else {
+        // Normal stance
+        // Left leg
+        ctx.fillRect(centerX - 12, player.y + 40, 10, 30);
+        // Right leg
+        ctx.fillRect(centerX + 2, player.y + 40, 10, 30);
+        // Feet
+        ctx.fillStyle = '#006699';
+        ctx.fillRect(centerX - 15, baseY - 5, 12, 5);
+        ctx.fillRect(centerX + 3, baseY - 5, 12, 5);
       }
       
       ctx.restore();
@@ -421,30 +480,85 @@ export default function ResolutionWarrior() {
       
       ctx.save();
       
-      ctx.fillStyle = enemy.color;
-      ctx.fillRect(enemy.x - enemy.width / 2, enemy.y, enemy.width, enemy.height);
+      const centerX = enemy.x;
+      const baseY = enemy.y + enemy.height;
       
+      // Head
       ctx.fillStyle = enemy.color;
-      ctx.globalAlpha = 0.8;
-      ctx.fillRect(enemy.x - 15, enemy.y - 20, 30, 20);
+      ctx.fillRect(centerX - 12, enemy.y - 25, 24, 24);
       
+      // Eyes (glowing red)
       ctx.fillStyle = '#ff0000';
-      ctx.fillRect(enemy.x - 10, enemy.y - 15, 8, 8);
-      ctx.fillRect(enemy.x + 2, enemy.y - 15, 8, 8);
+      ctx.fillRect(centerX - 8, enemy.y - 18, 6, 6);
+      ctx.fillRect(centerX + 2, enemy.y - 18, 6, 6);
       
+      // Body (torso) - darker shade
+      ctx.fillStyle = enemy.color;
+      ctx.globalAlpha = 0.9;
+      ctx.fillRect(centerX - 15, enemy.y, 30, 40);
+      ctx.globalAlpha = 1;
+      
+      // Arms
       if (enemy.isBlocking) {
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = '#ffff00';
-        ctx.fillRect(enemy.x - 25, enemy.y + 10, 10, 30);
-        ctx.fillRect(enemy.x + 15, enemy.y + 10, 10, 30);
+        // Blocking pose - arms up
+        ctx.fillStyle = enemy.color;
+        // Left arm
+        ctx.fillRect(centerX - 25, enemy.y + 5, 10, 25);
+        // Right arm
+        ctx.fillRect(centerX + 15, enemy.y + 5, 10, 25);
+        // Shield effect
+        ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
+        ctx.fillRect(centerX - 30, enemy.y, 60, 50);
+      } else if (enemy.isAttacking && enemy.attackType === 'punch') {
+        // Punching pose
+        ctx.fillStyle = enemy.color;
+        const punchArm = enemy.facingRight ? -1 : 1;
+        // Non-punching arm
+        ctx.fillRect(centerX - punchArm * 25, enemy.y + 5, 10, 30);
+        // Punching arm extended
+        ctx.fillRect(centerX + punchArm * 15, enemy.y + 10, 30, 8);
+        // Fist
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(centerX + punchArm * 45, enemy.y + 8, 12, 12);
+      } else if (enemy.isAttacking && enemy.attackType === 'kick') {
+        // Kicking pose
+        ctx.fillStyle = enemy.color;
+        // Both arms
+        ctx.fillRect(centerX - 25, enemy.y + 5, 10, 30);
+        ctx.fillRect(centerX + 15, enemy.y + 5, 10, 30);
+      } else {
+        // Normal stance
+        ctx.fillStyle = enemy.color;
+        // Left arm
+        ctx.fillRect(centerX - 25, enemy.y + 5, 10, 30);
+        // Right arm
+        ctx.fillRect(centerX + 15, enemy.y + 5, 10, 30);
       }
       
-      if (enemy.isAttacking) {
-        ctx.globalAlpha = 1;
+      // Legs
+      ctx.fillStyle = enemy.color;
+      ctx.globalAlpha = 0.8;
+      if (enemy.isAttacking && enemy.attackType === 'kick') {
+        // Kicking pose
+        const kickDir = enemy.facingRight ? -1 : 1;
+        // Standing leg
+        ctx.fillRect(centerX - kickDir * 10, enemy.y + 40, 12, 30);
+        // Kicking leg extended
+        ctx.fillRect(centerX + kickDir * 5, enemy.y + 35, 35, 10);
+        // Foot
         ctx.fillStyle = '#ff0000';
-        const attackX = enemy.facingRight ? enemy.x + 30 : enemy.x - 50;
-        const attackW = enemy.attackType === 'kick' ? 40 : 30;
-        ctx.fillRect(attackX, enemy.y + 20, attackW, 15);
+        ctx.globalAlpha = 1;
+        ctx.fillRect(centerX + kickDir * 40, enemy.y + 33, 15, 14);
+      } else {
+        // Normal stance
+        // Left leg
+        ctx.fillRect(centerX - 12, enemy.y + 40, 10, 30);
+        // Right leg
+        ctx.fillRect(centerX + 2, enemy.y + 40, 10, 30);
+        // Feet
+        ctx.globalAlpha = 1;
+        ctx.fillRect(centerX - 15, baseY - 5, 12, 5);
+        ctx.fillRect(centerX + 3, baseY - 5, 12, 5);
       }
       
       ctx.restore();
@@ -704,6 +818,8 @@ export default function ResolutionWarrior() {
     </div>
   );
 }
+
+
 
 
 
